@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flange Management - Industrial Management Suite</title>
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/reset.css" />
+    <link rel="stylesheet" href="css/flange-mng.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <a href="index.html" class="back-link">← Back to Dashboard</a>
+        <h1>Flange Management</h1>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <div class="form-container">
+          <div class="progress-bar">
+            <div class="progress-step active" data-step="1">
+              <span class="step-number">1</span>
+              <span class="step-label">Job Details</span>
+            </div>
+            <div class="progress-step" data-step="2">
+              <span class="step-number">2</span>
+              <span class="step-label">Breaking Points</span>
+            </div>
+            <div class="progress-step" data-step="3">
+              <span class="step-number">3</span>
+              <span class="step-label">Flange Details</span>
+            </div>
+          </div>
+
+          <form id="flangeForm" class="flange-form">
+            <!-- Step 1: Job Details -->
+            <div class="form-step active" data-step="1">
+              <h2>Job Details</h2>
+              <div class="form-group">
+                <label for="jobTitle">Job Title</label>
+                <input type="text" id="jobTitle" name="jobTitle" required />
+              </div>
+              <div class="form-group">
+                <label for="workOrder">Work Order Number</label>
+                <input type="text" id="workOrder" name="workOrder" required />
+              </div>
+              <div class="form-group">
+                <label for="equipment">Equipment</label>
+                <input type="text" id="equipment" name="equipment" required />
+              </div>
+              <div class="form-group">
+                <label for="breakingPoints">Number of Breaking Points</label>
+                <input
+                  type="number"
+                  id="breakingPoints"
+                  name="breakingPoints"
+                  min="1"
+                  required
+                />
+              </div>
+              <button type="button" class="btn btn-primary next-step">
+                Next Step
+              </button>
+            </div>
+
+            <!-- Step 2: Breaking Points -->
+            <div class="form-step" data-step="2">
+              <h2>Breaking Points</h2>
+              <div id="breakingPointsContainer" class="breaking-points-grid">
+                <!-- Breaking points cards will be generated here -->
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary prev-step">
+                  Previous
+                </button>
+                <button type="button" class="btn btn-primary next-step">
+                  Next Step
+                </button>
+              </div>
+            </div>
+
+            <!-- Step 3: Flange Details -->
+            <div class="form-step" data-step="3">
+              <h2>Flange Details</h2>
+              <div id="flangeDetailsContainer">
+                <!-- Flange details forms will be generated here -->
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary prev-step">
+                  Previous
+                </button>
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2024 Industrial Management Suite. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('flangeForm');
+        const breakingPointsInput = document.getElementById('breakingPoints');
+        const breakingPointsContainer = document.getElementById(
+          'breakingPointsContainer'
+        );
+        const flangeDetailsContainer = document.getElementById(
+          'flangeDetailsContainer'
+        );
+        const steps = document.querySelectorAll('.form-step');
+        const progressSteps = document.querySelectorAll('.progress-step');
+        const nextButtons = document.querySelectorAll('.next-step');
+        const prevButtons = document.querySelectorAll('.prev-step');
+
+        // Handle next step
+        nextButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const currentStep = button.closest('.form-step');
+            const nextStep = currentStep.nextElementSibling;
+
+            if (currentStep.dataset.step === '1') {
+              generateBreakingPointsCards();
+            } else if (currentStep.dataset.step === '2') {
+              generateFlangeDetailsForms();
+            }
+
+            currentStep.classList.remove('active');
+            nextStep.classList.add('active');
+            updateProgress(nextStep.dataset.step);
+          });
+        });
+
+        // Handle previous step
+        prevButtons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const currentStep = button.closest('.form-step');
+            const prevStep = currentStep.previousElementSibling;
+
+            currentStep.classList.remove('active');
+            prevStep.classList.add('active');
+            updateProgress(prevStep.dataset.step);
+          });
+        });
+
+        function updateProgress(step) {
+          progressSteps.forEach((progressStep) => {
+            if (progressStep.dataset.step <= step) {
+              progressStep.classList.add('active');
+            } else {
+              progressStep.classList.remove('active');
+            }
+          });
+        }
+
+        function generateBreakingPointsCards() {
+          const count = parseInt(breakingPointsInput.value);
+          breakingPointsContainer.innerHTML = '';
+
+          for (let i = 1; i <= count; i++) {
+            const card = document.createElement('div');
+            card.className = 'breaking-point-card';
+            card.innerHTML = `
+                        <h3>Breaking Point ${i}</h3>
+                        <div class="form-group">
+                            <label>ID</label>
+                            <select required>
+                                <option value="">Select ID</option>
+                                <option value="SP">SP</option>
+                                <option value="SB">SB</option>
+                                <option value="MW">MW</option>
+                                <option value="RS">RS</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Flange Size</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Grease</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="grease_${i}" value="Copaslip" required>
+                                    Copaslip
+                                </label>
+                                <label>
+                                    <input type="radio" name="grease_${i}" value="Molykote" required>
+                                    Molykote
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tools Used</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipe Gasket</label>
+                            <input type="text" required>
+                        </div>
+                    `;
+            breakingPointsContainer.appendChild(card);
+          }
+        }
+
+        function generateFlangeDetailsForms() {
+          const count = parseInt(breakingPointsInput.value);
+          flangeDetailsContainer.innerHTML = '';
+
+          for (let i = 1; i <= count; i++) {
+            const form = document.createElement('div');
+            form.className = 'flange-details-form';
+            form.innerHTML = `
+                        <h3>Flange Details - Breaking Point ${i}</h3>
+                        <div class="form-group">
+                            <label>ID</label>
+                            <select required>
+                                <option value="">Select ID</option>
+                                <option value="SP">SP</option>
+                                <option value="SB">SB</option>
+                                <option value="MW">MW</option>
+                                <option value="RS">RS</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Flange Size</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Rating</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Grease</label>
+                            <div class="radio-group">
+                                <label>
+                                    <input type="radio" name="grease_details_${i}" value="Copaslip" required>
+                                    Copaslip
+                                </label>
+                                <label>
+                                    <input type="radio" name="grease_details_${i}" value="Molykote" required>
+                                    Molykote
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Tools Used</label>
+                            <input type="text" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipe Gasket</label>
+                            <input type="text" required>
+                        </div>
+                    `;
+            flangeDetailsContainer.appendChild(form);
+          }
+        }
+
+        // Form submission
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          // Handle form submission here
+          alert('Form submitted successfully!');
+        });
+      });
+    </script>
+  </body>
+</html>
